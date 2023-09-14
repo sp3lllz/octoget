@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Current Rate</title>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #ce80ff;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #clock {
+            font-size: 128px;
+            margin-bottom: 50px;
+        }
+        #date {
+            font-size: 80px;
+            margin-bottom: 50px;
+        }
+        #value_inc_vat {
+            font-size: 80px;
+        }
+    </style>
+</head>
+<body>
+<div id="date"><span id="current_date"></span></div>
+<div id="clock">00:00</div>
+<div id="value_inc_vat">No Data at this time.</div>
+<script>
+        // Function to update the clock and date
+        function updateClockAndDate() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 as months are zero-based
+            const year = now.getFullYear();
+            const dayOfWeek = getDayOfWeek(now.getDay());
+
+            document.getElementById('clock').textContent = `${hours}:${minutes}`;
+            document.getElementById('current_date').textContent = `${dayOfWeek}, ${day} ${getMonthName(month)} ${year}`;
+        }
+
+        // Update the clock and date initially
+        updateClockAndDate();
+
+        // Update the clock and date every minute (60,000 milliseconds)
+        setInterval(updateClockAndDate, 60000);
+
+        // Function to get month name from month number
+        function getMonthName(month) {
+            const monthNames = [
+                'January', 'February', 'March', 'April',
+                'May', 'June', 'July', 'August',
+                'September', 'October', 'November', 'December'
+            ];
+            return monthNames[parseInt(month, 10) - 1];
+        }
+
+        // Function to get the day of the week
+        function getDayOfWeek(day) {
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return daysOfWeek[day];
+        }
+    </script>
+</body>
+</html>
