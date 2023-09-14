@@ -3,11 +3,11 @@ A simple webpage and python script to get the current rate from octopus energy.
 
 
 
-##Prerequisites
+## Prerequisites
 A linux server with python and apache installed. (a rasberry pi is a great low cost way to host this)
 
 
-#SETUP
+# SETUP
 Download the octoget.py file and index.html file 
 Place in `/var/www/html/` 
 SSH into or open the terminal to your machine and set up two crontab jobs as follows 
