@@ -1,74 +1,160 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-<title>Current Rate</title>
-<style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #ce80ff;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        #clock {
-            font-size: 128px;
-            margin-bottom: 50px;
-        }
-        #date {
-            font-size: 80px;
-            margin-bottom: 50px;
-        }
-        #value_inc_vat {
-            font-size: 80px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Current Rate</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.5s ease;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px 60px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #date {
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    #clock {
+      font-size: 5rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    #value_inc_vat {
+      font-size: 2.5rem;
+      font-weight: 500;
+    }
+
+    .theme-switcher {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s ease;
+    }
+
+    .theme-switcher:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Themes */
+    body.theme-default {
+      background: linear-gradient(135deg, #ce80ff, #6839d4);
+    }
+
+    body.theme-bluegreen {
+      background: linear-gradient(135deg, #3fd0c9, #0066ff);
+    }
+
+    body.theme-dark {
+      background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 20px 30px;
+      }
+      #clock {
+        font-size: 3rem;
+      }
+      #date, #value_inc_vat {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
-<body>
-<div id="date"><span id="current_date"></span></div>
-<div id="clock">00:00</div>
-<div id="value_inc_vat">No Data at this time.</div>
-<script>
-        // Function to update the clock and date
-        function updateClockAndDate() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 as months are zero-based
-            const year = now.getFullYear();
-            const dayOfWeek = getDayOfWeek(now.getDay());
+<body class="theme-default">
+  <div class="card">
+    <div id="date"><span id="current_date"></span></div>
+    <div id="clock">00:00</div>
+    <div id="value_inc_vat">No Data at this time.</div>
+  </div>
+  <div class="theme-switcher" id="themeToggle">🎨</div>
 
-            document.getElementById('clock').textContent = `${hours}:${minutes}`;
-            document.getElementById('current_date').textContent = `${dayOfWeek}, ${day} ${getMonthName(month)} ${year}`;
-        }
+  <script>
+    const themes = ['theme-default', 'theme-bluegreen', 'theme-dark'];
+    let currentThemeIndex = 0;
 
-        // Update the clock and date initially
-        updateClockAndDate();
+    function setTheme(index) {
+      document.body.classList.remove(...themes);
+      document.body.classList.add(themes[index]);
+      localStorage.setItem('preferredTheme', index);
+    }
 
-        // Update the clock and date every minute (60,000 milliseconds)
-        setInterval(updateClockAndDate, 60000);
+    function loadSavedTheme() {
+      const saved = localStorage.getItem('preferredTheme');
+      if (saved !== null && themes[saved]) {
+        currentThemeIndex = parseInt(saved, 10);
+        setTheme(currentThemeIndex);
+      }
+    }
 
-        // Function to get month name from month number
-        function getMonthName(month) {
-            const monthNames = [
-                'January', 'February', 'March', 'April',
-                'May', 'June', 'July', 'August',
-                'September', 'October', 'November', 'December'
-            ];
-            return monthNames[parseInt(month, 10) - 1];
-        }
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+      setTheme(currentThemeIndex);
+    });
 
-        // Function to get the day of the week
-        function getDayOfWeek(day) {
-            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            return daysOfWeek[day];
-        }
-    </script>
+    function updateClockAndDate() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const month = now.getMonth();
+      const year = now.getFullYear();
+      const weekday = now.getDay();
+
+      document.getElementById('clock').textContent = `${hours}:${minutes}`;
+      document.getElementById('current_date').textContent = 
+        `${getDayOfWeek(weekday)}, ${day} ${getMonthName(month)} ${year}`;
+    }
+
+    function getMonthName(monthIndex) {
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      return monthNames[monthIndex];
+    }
+
+    function getDayOfWeek(dayIndex) {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return days[dayIndex];
+    }
+
+    updateClockAndDate();
+    setInterval(updateClockAndDate, 60000);
+    loadSavedTheme();
+  </script>
 </body>
 </html>
